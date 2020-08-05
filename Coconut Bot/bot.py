@@ -14,6 +14,8 @@ users_timestamp = {}
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+    game = Game("==help")
+    await client.change_presence(status=Status.idle, activity=game)
 
 @client.event
 async def on_message(message):
