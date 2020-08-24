@@ -28,7 +28,7 @@ async def on_message(message):
             caller_id, voice_id, total_time = select_DiscordUserVoiceSession_from_command_caller(message.author.id, cursor)
             my_time_spent_message = f"Name: <@{caller_id}>\n" \
                                     f"Voice channel name: {client.get_channel(voice_id).name}\n" \
-                                    f"Total time spent: {str(int(total_time / 120))} hours"
+                                    f"Total time spent: {str(int(total_time / 3600))} hours"
             await message.channel.send(my_time_spent_message)
         except:
             await message.channel.send("An error has ocurred, please try again later.")
