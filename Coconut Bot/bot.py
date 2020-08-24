@@ -16,6 +16,7 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     game = Game("==help")
     await client.change_presence(status=Status.idle, activity=game)
+    add_preexistent_voice_members()
 
 @client.event
 async def on_message(message):
@@ -49,11 +50,9 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         set_user_joined_timestamp(member.id)
 
 def set_user_joined_timestamp(member_id: int):
-    if select_DiscordUser_from_database(member_id, cursor) is not None:
-        users_timestamp[member_id] = time.time()
-    else:
+    if select_DiscordUser_from_database(member_id, cursor) is None:
         insert_DiscordUser_into_databse(member_id, cursor, connection)
-        users_timestamp[member_id] = time.time()
+    users_timestamp[member_id] = time.time()
 
 def set_user_left_timestamp(member_id: int, channel_id: int):
     if member_id in users_timestamp:
@@ -62,5 +61,11 @@ def set_user_left_timestamp(member_id: int, channel_id: int):
         session_amount = left_timestamp - joined_timestamp
         insert_DiscordUserVoiceSession_into_database(member_id, channel_id, session_amount, cursor, connection)
         del users_timestamp[member_id]
+
+def add_preexistent_voice_members():
+    for guild in client.guilds:
+        for voice_channel in guild.voice_channels:
+            for member in voice_channel.members:
+                set_user_joined_timestamp(member.id)
 
 client.run(token)
